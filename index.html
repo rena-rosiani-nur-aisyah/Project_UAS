@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <title></title>
+        <meta name="description" content="the HTML5 Barbone API">
+        <meta name="author" content="API Example">
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+        <style>
+            #wrapper{
+                display: flex;
+            }
+            #left{
+                flex: 0 0 1;
+            }
+            #right{
+                flex: 1;
+                padding-left: 10px;
+            }
+
+            table#theTable,
+            table#theTable th,
+            table#theTable td{
+                border: 1px solid black;
+            }
+            table#theTable.center{
+                margin-left: auto;
+                margin-right: auto;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="wrapper">
+        <div id="left">
+        <table id="theTable">
+            <thead>
+                <tr>
+                    <th colspan="5" align="right">
+                        <button onclick="tambah()">Tambah</button>
+                    </th>
+                </tr>
+
+                <tr>
+                    <th>ID</th>
+                    <th>Katalog</th>
+                    <th>Gambar</th>
+                    <th colspan="2">Aksi</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<div id="right">
+    <table id="form">
+        <tbody>
+            <tr>
+                <td colspan="3" id="form_judul"></td>
+            </tr>
+            <tr>
+                <td>
+                    ID
+                </td>
+                <td>:</td>
+                <td id="form_id"></td>
+            </tr>
+            
+            <tr>
+                <td>Kategori</td>
+                <td>:</td>
+                <td>
+                    <input type="hidden" id="form_hidden_id">
+                    <input type="hidden" id="form_kategori">
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="3" align="right">
+                    <button id="btnSimpanEdit" class="formBtn" style="display: none;"
+                        onclick="saveEdit()">Simpan Edit</button>
+                    <button id="btnSimpanBaru" class="formBtn" style="display: none;"
+                        onclick="saveTambah()">Simpan Baru</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+        <script>
+            function loadFormApi(){
+            document.getElementById('theTable').getElementsByTagName('tbody')[0].innerHTML=""
+            axios.get('https://websiterena.000webhostapp.com/listnews.php')
+            .then(function(response){
+                //handle
+                console.log(response);
+                const res = response.data
+                const tbodyRef = document.getElementById('theTable').getElementsByTagName('tbody')[0];
+                res.forEach(function (value, index, arr) {
+                    const newRow = tbodyRef.insertRow();
+                    let newCellId = newRow.insertCell();
+                    newCellId.innerHTML = value.id 
+
+                    newCellId = newRow.insertCell();
+                    newCellId.innerHTML = value.name_catalog
+
+                    newCellId = newRow.insertCell()
+                    const editBtn = document.createElement("BUTTON")
+                    editBtn.id = "btnEdit" + value.id
+                    editBtn.innerHTML = "EDIT"
+                    editBtn.addEventListener('click', function(){
+                        edit(value)
+                    })
+                    newCellId.appendChild(editBtn)
+
+                    newCellId = newRow.insertCell()
+                    const hapusBtn = document.createElement("BUTTON")
+                    hapusBtn.id = "btnDelete" + value.id
+                    hapusBtn.innerHTML = "HAPUS"
+                    hapusBtn.addEventListener('click', function(){
+                        edit(value)
+                    });
+                    newCellId.appendChild(hapusBtn)
+                });
+                
+            })
+            .catch(function(error){
+                console.log(error);
+            })
+            .then(function(){
+
+            });
+
+            function clearForm(){
+                document.getElementById("form_hidden_id").value = ""
+                document.getElementById("form_id").value = ""
+                document.getElementById("form_kategori").value = ""
+                document.getElementById("form_judul").value = ""
+                hiddenFormBtn()
+                document.getElementById("form").style.display = "none"
+            }
+            function showForm(){
+                var form = document.getElementById("form");
+                form.style.display = "black";
+            }
+            loadFormApi()
+            clearForm()
+        }
+        </script>
+    </body>
+</html>
